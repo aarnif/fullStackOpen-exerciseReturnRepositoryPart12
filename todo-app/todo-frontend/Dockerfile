@@ -9,5 +9,7 @@ ENV REACT_APP_BACKEND_URL="http://localhost:3000/"
 
 RUN npm run build
 
+RUN CI=true npm test
+
 FROM nginx:1.24-alpine
 COPY --from=build-stage /usr/src/app/build /usr/share/nginx/html
