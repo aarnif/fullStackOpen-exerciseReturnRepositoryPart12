@@ -2,24 +2,17 @@ services:
   app:
     image: todo-frontend-dev
     build:
-      context: .
-      dockerfile: todo-frontend/dev.Dockerfile
+      context: ./todo-frontend
+      dockerfile: ./todo-frontend/dev.Dockerfile
     volumes:
       - ./todo-frontend:/usr/src/app
     ports:
-      - 3001:3001
+      - 3000:3000 # gives the websocket error without this
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8080/api
     container_name: todo-frontend-dev
   debug-helper:
     image: busybox
-  nginx:
-    image: nginx:1.20.1
-    volumes:
-      - ./nginx.dev.conf:/etc/nginx/nginx.dev.conf:ro
-    ports:
-      - 8080:80
-    container_name: reverse-proxy
-    depends_on:
-      - app
   mongo:
     image: mongo
     ports:
@@ -37,17 +30,28 @@ services:
       - 6379:6379
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - ./redis_data:/data
+      - ./todo-backend/redis_data:/data
   server:
     image: todo-backend-dev
+    build:
+      context: ./todo-backend
+      dockerfile: ./todo-backend/dev.Dockerfile
     volumes:
       - ./todo-backend:/usr/src/app
-    ports:
-      - 3000:3000
     environment:
       - REDIS_URL=redis://redis:6379
       - MONGO_URL=mongodb://the_username:the_password@mongo:27017/the_database
     container_name: todo-backend-dev
+  nginx:
+    image: nginx:1.24.0
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: reverse-proxy
+    depends_on:
+      - app
+      - server
 
 volumes:
   mongo_data:
