@@ -1,0 +1,12 @@
+.menu {
+  all: unset;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  background-color: darkgrey;
+}
+
+.menu > li {
+  list-style: none;
+  margin-right: 10px;
+}
