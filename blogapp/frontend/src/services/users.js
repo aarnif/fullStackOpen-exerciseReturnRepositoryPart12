@@ -1,8 +1,8 @@
 import axios from "axios";
-const baseUrl = "http://localhost:3003/api/users";
+import baseUrls from "../baseUrls";
 
 const getAll = async () => {
-  const request = await axios.get(baseUrl);
+  const request = await axios.get(baseUrls.users);
   return request.data;
 };
 
